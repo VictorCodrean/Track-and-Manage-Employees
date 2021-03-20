@@ -1,0 +1,24 @@
+{
+  "name": "track-and-manage-employees",
+  "version": "1.0.0",
+  "description": "a command line to track and manage employees...",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VictorCodrean/Track-and-Manage-Employees.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VictorCodrean/Track-and-Manage-Employees/issues"
+  },
+  "homepage": "https://github.com/VictorCodrean/Track-and-Manage-Employees#readme",
+  "dependencies": {
+    "inquirer": "^8.0.0",
+    "mysql2": "^2.2.5"
+  }
+}
