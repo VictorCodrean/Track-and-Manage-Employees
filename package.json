@@ -18,7 +18,11 @@
   },
   "homepage": "https://github.com/VictorCodrean/Track-and-Manage-Employees#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "inquirer": "^8.0.0",
-    "mysql2": "^2.2.5"
+    "mysql": "^2.18.1",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.5.1"
   }
 }
