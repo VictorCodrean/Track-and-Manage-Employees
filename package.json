@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/VictorCodrean/Track-and-Manage-Employees#readme",
   "dependencies": {
+    "console.table": "^0.10.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "inquirer": "^8.0.0",
