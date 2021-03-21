@@ -70,9 +70,9 @@ function viewEmployees(connection) {
         role.title AS Title,
         role.salary AS Salary,
         department.name AS Department
-        FROM employee INNER JOIN role
-        ON (employee.role_id = role.id)
-        INNER JOIN department ON role.department_id = department.id`;
+        FROM employee JOIN role
+        ON employee.role_id = role.id
+        JOIN department ON role.department_id = department.id`;
     connection.query(query, function (err, res) {
         if (err) throw err;
         console.table(res)
@@ -80,5 +80,54 @@ function viewEmployees(connection) {
     });
 }
 
+function updateEmRoles(connection) {
+    console.log("Updating Employee Role");
+    connection.query(`SELECT * FROM employee AS empl
+    JOIN role ON empl.role_id = role.id`, function (err, res) {
+        if (err) throw err;
+        const availableEmployees = res.map(employee => {
+            var availableOption = {
+                name: `${employee.first_name} ${employee.last_name}`,
+                value: employee.id
+            }
+            return availableOption;
+        })
+        inquirer.prompt({
+            name: "update",
+            type: "list",
+            message: "Choose an employee to update",
+            choices: availableEmployees
+        })
+            .then(function (answer) {
+                connection.query("SELECT id, title FROM role;", function (err, res) {
+                    if (err) throw err;
+                    const roles = res.map(role => {
+                        var roleChoices = {
+                            name: role.title,
+                            value: role.id
+                        }
+                        return roleChoices;
+                    });
+                    inquirer.prompt({
+                        name: "roleUpdate",
+                        type: "list",
+                        message: "Select the new role for the employee",
+                        choices: roles
+                    }).then(function (answer2) {
+                        var values = [answer2.roleUpdate, answer.update];
+                        connection.query("UPDATE employee SET role_id = ? WHERE id=?", values, function (err, res) {
+                            if (err) throw err;
+
+                            connection.query("SELECT * FROM employee WHERE id=?", answer.update, function (err, res) {
+                                if (err) throw err;
+                                console.table(res);
+                                startPrompts(connection)
+                            })
+                        })
+                    })
+                })
+            })
+    })
+}
 
 module.exports = startPrompts;
