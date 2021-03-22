@@ -14,19 +14,23 @@ function startPrompts(connection) {
             "View departments",
             "View roles",
             "View employees",
-            "Update employees roles"
+            "Update employees roles",
+            "Remove a department",
+            "Remove role",
+            "Remove employee",
+            "Quit"
         ]
     })
         .then(function (answer) {
             switch (answer.action) {
                 case "Add department":
-                    addDeppartment();
+                    addDeppartment(connection);
                     break;
                 case "Add role":
-                    addRole();
+                    addRole(connection);
                     break;
                 case "Add employee":
-                    addemployee();
+                    addemployee(connection);
                     break;
                 case "View departments":
                     viewDepartments(connection);
@@ -38,7 +42,20 @@ function startPrompts(connection) {
                     viewEmployees(connection);
                     break;
                 case "Update employees roles":
-                    updateEmRoles(connection);
+                    updateEmRole(connection);
+                    break;
+                case "Remove a department":
+
+                    removeDepartment(connection);
+                    break;
+                case "Remove role":
+                    removeRole(connection);
+                    break;
+                case "Remove employee":
+                    removeEmployee(connection);
+                    break;
+                case "Quit":
+                    quitPrompts(connection);
                     break;
             }
         })
@@ -49,7 +66,7 @@ function viewDepartments(connection) {
     connection.query(query, function (err, res) {
         if (err) throw err;
         console.table(res)
-        startPrompts(connection);
+        menuOrQuit(connection);
     });
 };
 
@@ -58,7 +75,7 @@ function viewRoles(connection) {
     connection.query(query, function (err, res) {
         if (err) throw err;
         console.table(res)
-        startPrompts(connection);
+        menuOrQuit(connection);
     });
 }
 
@@ -76,14 +93,13 @@ function viewEmployees(connection) {
     connection.query(query, function (err, res) {
         if (err) throw err;
         console.table(res)
-        startPrompts(connection);
+        menuOrQuit(connection);
     });
 }
 
-function updateEmRoles(connection) {
+function updateEmRole(connection) {
     console.log("Updating Employee Role");
-    connection.query(`SELECT * FROM employee AS empl
-    JOIN role ON empl.role_id = role.id`, function (err, res) {
+    connection.query(`SELECT id, first_name, last_name FROM employee;`, function (err, res) {
         if (err) throw err;
         const availableEmployees = res.map(employee => {
             var availableOption = {
@@ -121,13 +137,210 @@ function updateEmRoles(connection) {
                             connection.query("SELECT * FROM employee WHERE id=?", answer.update, function (err, res) {
                                 if (err) throw err;
                                 console.table(res);
-                                startPrompts(connection)
+                                menuOrQuit(connection)
                             })
                         })
                     })
                 })
             })
     })
+}
+
+function addDeppartment(connection) {
+    inquirer.prompt([{
+        name: "departmentName",
+        type: "input",
+        message: "Insert the name of the department to be added"
+    }])
+        .then(function (answer) {
+            var query = `INSERT INTO department (name) VALUES (?)`
+            connection.query(query, answer.departmentName, (err, res) => {
+                if (err) throw err;
+                console.log("Department added");
+                connection.query(`SELECT * FROM department`, (err, res) => {
+                    console.table(res);
+                    menuOrQuit(connection);
+                })
+            });
+        })
+}
+
+function addRole(connection) {
+    console.log("Adding a new role");
+    inquirer.prompt([{
+        name: "title",
+        type: "input",
+        message: "Type in the name/title of new role"
+    },
+    {
+        name: "salary",
+        type: "input",
+        message: "Type in the salary for the respective title"
+    },
+    {
+        name: "department_id",
+        type: "input",
+        message: "Type in the departmend Id"
+    }
+    ]).then(function (answer) {
+        var query = `INSERT INTO role (title, salary, department_id) VALUES (?,?,?)`;
+        var roleValues = [answer.title, answer.salary, answer.department_id];
+        connection.query(query, roleValues, (err, res) => {
+            if (err) throw err;
+            var show = "SELECT * FROM role";
+            connection.query(show, (err, res) => {
+                if (err) throw err;
+                console.table(res);
+                menuOrQuit(connection);
+            });
+        });
+    });
+};
+
+function addemployee(connection) {
+    console.log("Adding a new employee");
+    var query = "SELECT * FROM role";
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        // console.log(res);
+        var rolesArr = res.map(role => {
+            var object = {
+                name: role.title,
+                value: role.id
+            }
+            return object
+        })
+        // console.log(rolesArr);
+        inquirer.prompt([{
+            name: "first_name",
+            type: "input",
+            message: "Type in the first name"
+        }, {
+            name: "last_name",
+            type: "input",
+            message: "Type in the last name"
+        }, {
+            name: "role_id",
+            type: "list",
+            message: "What's the title/role name?",
+            choices: rolesArr
+        }
+        ]).then(function (answer) {
+            connection.query(`SELECT id, first_name, last_name FROM employee;`, (err, res) => {
+                if (err) throw err;
+                const availableEmployees = res.map(employee => {
+                    var availableOption = {
+                        name: `${employee.first_name} ${employee.last_name}`,
+                        value: employee.id
+                    }
+                    return availableOption;
+                })
+                inquirer.prompt({
+                    name: "manager_id",
+                    type: "list",
+                    message: "Who is his manager?",
+                    choices: [{ name: "none", value: null }].concat(availableEmployees)
+                }).then(function (answer2) {
+                    var query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES(?,?,?,?)";
+                    var valuesEmpl = [answer.first_name, answer.last_name, answer.role_id, answer2.manager_id];
+                    connection.query(query, valuesEmpl, (err, res) => {
+                        if (err) throw err;
+                        var show = "SELECT * FROM employee";
+                        connection.query(show, (err, res) => {
+                            if (err) throw err;
+                            console.log(`Employee ${answer.first_name} ${answer.last_name} added`);
+                            console.table(res);
+                            menuOrQuit(connection);
+                        });
+                    });
+                });
+            });
+        });
+    });
+};
+
+function removeDepartment(connection) {
+    connection.query("SELECT id, name FROM department;", (err, res) => {
+        if (err) throw err;
+        console.log(res);
+        const allDepartments = res.map(department => {
+            var returnedDepartments = {
+                name: `${department.name}`,
+                value: department.id
+            }
+            return returnedDepartments;
+        })
+        // console.log(allDepartments);
+
+        inquirer.prompt({
+            name: "remove",
+            type: "list",
+            message: "Select a desired department to be removed",
+            choices: allDepartments
+        }).then(function (answer) {
+            // console.log(answer);
+            connection.query("DELETE FROM department WHERE id=?;", [answer.remove], (err, res) => {
+                if (err) throw err;
+                console.log(`department with id: ${answer.remove}  deleted.`);
+                menuOrQuit(connection)
+            })
+        })
+    })
+}
+
+function removeRole(connection) {
+    connection.query(`SELECT id, title FROM role;`, (err, res) => {
+        if (err) throw err;
+        console.log(res[0].name);
+        // var titleDelete = res.name;
+        var arrTitles = res.map(availableTitles => {
+            var titlesObject = {
+                name: `${availableTitles.title}`,
+                value: availableTitles.id
+            }
+            return titlesObject
+        });
+
+        console.log(arrTitles);
+        inquirer.prompt({
+            name: "remove",
+            type: "list",
+            message: "Select a role to be removed",
+            choices: arrTitles
+        }).then(function (answer) {
+            connection.query("DELETE FROM role WHERE id =?;", [answer.remove], (err, res) => {
+                if (err) throw err;
+                // console.log(`Role/title: ${titleDelete} deleted`);
+                menuOrQuit(connection);
+            });
+        });
+    });
+};
+
+function menuOrQuit(connection) {
+    inquirer.prompt({
+        name: "mainMenu",
+        type: "list",
+        message: "Go back to Main Menu?",
+        choices: [
+            "Yes, back to main Menu",
+            "No, exit!"
+        ]
+    }).then(function (answer) {
+        switch (answer.mainMenu) {
+            case "Yes, back to main Menu":
+                startPrompts(connection);
+                break;
+            case "No, exit!":
+                quitPrompts(connection);
+                break;
+        }
+    });
+};
+
+function quitPrompts(connection) {
+    console.log("The app is stopped!");
+    connection.end();
 }
 
 module.exports = startPrompts;
