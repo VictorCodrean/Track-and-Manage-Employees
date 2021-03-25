@@ -3,23 +3,24 @@ const cTable = require("console.table");
 
 // Start promptsQuestion
 function startPrompts(connection) {
+    const options = [
+        "Add department",
+        "Add role",
+        "Add employee",
+        "View departments",
+        "View roles",
+        "View employees",
+        "Update employees role",
+        "Remove a department",
+        "Remove role",
+        "Remove employee",
+        "Quit"
+    ];
     inquirer.prompt({
         name: "action",
         type: "list",
         message: "Select an option from given choices:",
-        choices: [
-            "Add department",
-            "Add role",
-            "Add employee",
-            "View departments",
-            "View roles",
-            "View employees",
-            "Update employees role",
-            "Remove a department",
-            "Remove role",
-            "Remove employee",
-            "Quit"
-        ]
+        choices: options
     })
         .then(function (answer) {
             switch (answer.action) {
@@ -320,7 +321,8 @@ function addemployee(connection) {
                     const availableEmployees = res.map(employee => {
                         var availableOption = {
                             name: `${employee.first_name} ${employee.last_name}`,
-                            value: employee.id
+                            value: employee.id,
+                            id: employee.id
                         }
                         return availableOption;
                     })
