@@ -68,9 +68,8 @@ node <server.js>       (to run the program)
            user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-});
+        });
         ```
-        
    * inquirer
          ```
         inquirer.prompt({
