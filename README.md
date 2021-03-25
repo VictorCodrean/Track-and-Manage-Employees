@@ -70,7 +70,7 @@ node <server.js>       (to run the program)
         database: process.env.DB_NAME,
         });
         ```
-   * inquirer
+     * inqu irer
          ```
         inquirer.prompt({
           ...
