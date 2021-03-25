@@ -11,7 +11,7 @@
 
 ## Illustration
 
-![sampleReadme](./assets/illustration.gif)
+![sampleReadme](./assets/illustrationn.gif)
 
 ## Description
 
@@ -26,7 +26,7 @@ So that I can organize and plan my business
 
 ## Video_demonstration
 
-[![video](/assets/working_process.png)](https://www.youtube.com/watch?v=Qmq0qqcXSIQ "Video demonstration")
+[![video](/assets/working_processs.png)](https://www.youtube.com/watch?v=Qmq0qqcXSIQ "Video demonstration")
 
 ## Installation
 ```md
@@ -68,9 +68,9 @@ node <server.js>       (to run the program)
            user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-});
+        });
         ```
-     * inquirer
+     * inqu irer
          ```
         inquirer.prompt({
           ...
