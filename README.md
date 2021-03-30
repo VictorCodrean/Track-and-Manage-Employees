@@ -11,7 +11,7 @@
 
 ## Illustration
 
-![sampleReadme](./assets/illustrationn.gif)
+![sampleReadme](./Assets/illustrationn.gif)
 
 ## Description
 
@@ -26,7 +26,7 @@ So that I can organize and plan my business
 
 ## Video_demonstration
 
-[![video](/assets/working_processs.png)](https://www.youtube.com/watch?v=Qmq0qqcXSIQ "Video demonstration")
+[![video](/Assets/working_processs.png)](https://www.youtube.com/watch?v=Qmq0qqcXSIQ "Video demonstration")
 
 ## Installation
 ```md
